@@ -29,7 +29,33 @@ rates or spoof resistance.
 - `patches/` — OpenCV 5 and device-table corrections for the pinned MR.
 - `packaging/libfprint-fpcmoh/` — reproducible Arch package recipe.
 - `tools/` — narrow open/close, capture, and offline SIGFM research tools.
+- [`CREDITS.md`](CREDITS.md) — upstream authorship and project provenance.
 - `AGENTS.md` — safety and experiment rules.
+
+The [stock-versus-patched A/B report](docs/ab-test.md) isolates the functional
+difference to the patched libfprint package while preserving the same fprintd
+enrollment and system configuration.
+
+## Reliability pilot
+
+`tools/reliability-pilot.py` is an interactive aggregate-only runner for sparse
+genuine and different-finger trials. It does not enroll, delete templates, edit
+PAM, or store fprintd output. Review the next planned trials without touching the
+sensor:
+
+```bash
+python3 tools/reliability-pilot.py --plan --count 5
+```
+
+Run live trials only after reviewing the safety boundary and ensuring password
+fallback. Use small sessions separated by normal laptop use:
+
+```bash
+python3 tools/reliability-pilot.py --count 1
+```
+
+The default ledger is ignored under `artifacts/private/` and contains only
+finger labels, placement categories, expected/observed outcomes, and error flags.
 
 ## Arch package
 

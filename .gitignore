@@ -1,5 +1,6 @@
 # Private biometric and protocol artifacts
 artifacts/private/
+Proofs/
 FingerPrint.zip
 failed-output.txt
 EXPERIMENT_LOG.md
@@ -36,3 +37,5 @@ core.*
 *.o
 *.so
 *.a
+__pycache__/
+*.pyc

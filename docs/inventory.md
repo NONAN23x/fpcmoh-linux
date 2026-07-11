@@ -30,8 +30,14 @@ excluded.
 - SIGFM offline matching: passed; placement sensitivity documented.
 - Five-stage host enrollment: passed; private template validated byte-for-byte.
 - Live pilot: 5/5 genuine accepts, 5/5 different-finger rejects, 0 protocol errors.
+- Structured reliability pilot: 41 valid trials so far; 13/21 genuine accepts,
+  20/20 different-finger rejects, and no protocol/daemon failure. Rotation,
+  light contact, rapid scanning, and sensor cleanliness affect reliability.
 - fprintd enrollment and verification: passed.
-- KDE lock-screen unlock after suspend: passed; no project PAM edit required.
+- KDE lock-screen unlock after suspend and reboot: passed; no project PAM edit required.
+- Stock-versus-patched A/B package test: stock exposed no device; restoring the
+  pinned patched package immediately restored the reader, saved enrollment, and
+  KDE fingerprint unlock.
 
 ## Physical USB inventory
 
@@ -79,6 +85,37 @@ ephemeral and must not be used as stable identifiers in scripts.
 The current upstream libfprint supported-device list also omits `10a5:9200`.
 Installing another released fprintd package alone will therefore not add
 support; the missing piece is a device driver/protocol implementation.
+
+### Public Linux hardware-probe evidence
+
+The [linux-hardware.org record for `10a5:9200`](https://linux-hardware.org/?id=usb:10a5-9200)
+identifies the device as `FPC FPC Sensor Controller`, class `ff-ff-ff`. At the
+time checked on 2026-07-11, it stated:
+
+- no driver found in Linux kernel versions through 7.0 according to LKDDb;
+- no driver found in its known additional packages;
+- 107 probes represented by 104 listed computer records across eight pages;
+- every listed computer record marked `failed`.
+
+These community-probe results corroborate the historical lack of released
+support, but are not the sole proof: database coverage and status can lag new
+out-of-tree work. The controlled local A/B package test below directly verifies
+the stock-versus-patched behavior on this exact laptop.
+
+### Controlled stock-versus-patched A/B result
+
+The user preserved password access and the existing fprintd enrollment, then
+swapped only the pacman-owned libfprint implementation:
+
+1. With official stock libfprint installed, `fprintd-list` reported no device.
+2. The user reinstalled the inspected package
+   `libfprint-fpcmoh 1.94.10.fpcmoh.10.gaf647965-2`.
+3. fprintd immediately listed the FPC MOH reader and the previously enrolled
+   right index; KDE lock/unlock authentication worked again.
+
+No enrollment, PAM, firmware, device key, or fprintd-data change was needed.
+This isolates the functional difference to the patched libfprint package and
+its `fpcmoh`/SIGFM support.
 
 ### Experimental driver live baseline
 
@@ -235,4 +272,5 @@ No key material or biometric data was extracted.
 - [libfprint MR !530: SIGFM integration](https://gitlab.freedesktop.org/libfprint/libfprint/-/merge_requests/530)
 - [Experimental `pakizat/libfprint-fpc9200` fork](https://github.com/pakizat/libfprint-fpc9200)
 - [Neodyme: Reversing a Fingerprint Reader Protocol](https://neodyme.io/en/blog/fingerprint_reversing/)
+- [linux-hardware.org: USB `10a5:9200`](https://linux-hardware.org/?id=usb:10a5-9200)
 - Local USB/DMI/kernel observations and the user-supplied `FingerPrint.zip`

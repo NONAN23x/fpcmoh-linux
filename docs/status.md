@@ -17,16 +17,21 @@ Updated: 2026-07-11
 - SIGFM offline scoring complete.
 - Five-stage host enrollment complete.
 - Private template round-trip validation complete.
-- Genuine tests: `5/5` accepted.
-- Different-finger tests: `5/5` rejected.
+- Initial pilot: `5/5` genuine accepted and `5/5` different-finger rejected.
+- Structured pilot: 41/60 valid trials complete; genuine `13/21` accepted,
+  different-finger `20/20` rejected.
 - Protocol errors: `0`.
 - Harness teardown bug: fixed and validated.
+- Stock-versus-patched A/B: stock exposed no reader; patched package restored
+  the reader, existing enrollment, verification, and KDE unlock.
+- linux-hardware.org historical record: no kernel/additional-package driver and
+  all 104 listed computer records (107 probes) marked failed when checked.
 
 ## State
 
-- System libfprint: stock.
-- fprintd: inactive; no stored prints observed.
-- PAM: unchanged; `pam_fprintd` not configured.
+- System libfprint: `libfprint-fpcmoh 1.94.10.fpcmoh.10.gaf647965-2`.
+- fprintd: D-Bus activated; one preserved right-index enrollment.
+- Project PAM changes: none; existing KDE vendor fingerprint policy is active.
 - Readiness: research-only, not production-qualified.
 
 ## Next
@@ -41,6 +46,8 @@ Updated: 2026-07-11
 - KDE lock-screen unlock: passed; enrolled finger accepted, other fingers rejected.
 - PAM files changed by project: none.
 - Existing KDE vendor policy: `/usr/lib/pam.d/kde-fingerprint` uses `pam_fprintd`.
-- Reboot/login/password-fallback tests: pending.
-- Test fprintd without PAM.
+- Reboot persistence and password fallback: passed.
+- SDDM fingerprint login: not configured; KDE lock-screen unlock works.
+- Complete remaining 19 sparse reliability trials after cooldown; avoid rapid
+  batches and preserve the current enrollment until the pilot finishes.
 - Keep official `libfprint` as rollback.
