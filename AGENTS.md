@@ -1,176 +1,92 @@
 # AGENTS.md
 
-## Scope and objective
+## Objective
 
-These instructions apply to the entire workspace.
+Ethically develop reproducible Linux support for the user's Mi NoteBook Ultra
+fingerprint reader: `10a5:9200 FPC FPC Sensor Controller`. Prefer reviewable
+upstream libfprint work. Do not expose biometric data or weaken other systems.
 
-The project concerns ethical interoperability research on hardware owned by the
-user: the fingerprint reader in a Mi NoteBook Ultra. The confirmed USB device is
-`10a5:9200 FPC FPC Sensor Controller`. Work should aim for a reproducible,
-reviewable Linux implementation, preferably suitable for upstream libfprint,
-without weakening unrelated systems or exposing biometric data.
+## User-operated changes
 
-## User controls interactive and state-changing operations
+Stop, explain one exact command and expected output, then wait for the user to
+run it whenever an operation is interactive, privileged, or changes host/device
+state. This includes:
 
-The agent must stop, explain the proposed operation, provide the exact command,
-and wait for the user to run it and return the output before continuing whenever
-an operation is interactive, privileged, or changes host/device state.
+- `pacman`, `yay`, `paru`, `sudo`, `doas`, package or local-driver changes;
+- state-changing `systemctl`, module, udev, ACL, permission, group, or USB-reset
+  commands;
+- USB claims/transfers, capture, enrollment, verification, template deletion;
+- usbmon/Wireshark capture, VM passthrough, Windows registry/debugger work;
+- firmware, BIOS, PAM, login, lock-screen, `sudo`, or disk-unlock changes.
 
-This rule includes, but is not limited to:
+Never execute these through tools or elevation prompts. Read-only commands that
+hit permission barriers must also be handed to the user.
 
-- every `pacman`, `yay`, or `paru` command, including package queries;
-- `sudo`, `doas`, authentication prompts, and privilege escalation;
-- package installation, removal, upgrade, or dependency resolution;
-- `systemctl` operations that start, stop, restart, enable, or disable services;
-- loading or unloading kernel modules, including `modprobe usbmon`;
-- udev rule changes, permission changes, group membership changes, and USB reset;
-- commands that claim, detach, reconfigure, write to, or send control/bulk
-  transfers to the fingerprint reader;
-- Wireshark/usbmon capture, VM USB passthrough, Windows registry changes,
-  debugger attachment, firmware operations, and BIOS changes;
-- installing a locally built library or driver;
-- deleting enrollment records or biometric templates.
+## External-code gate
 
-Do not attempt these commands through an execution tool or an elevation prompt.
-Give the user one small, auditable step at a time, state what output is expected,
-and wait for the result before taking the next step.
+Before checkout, build, run, install, or test an external driver/fork/patch/MR,
+present and obtain approval for:
 
-## Consultation gate for external code and experiments
+1. URL and exact branch/commit;
+2. upstream/review status;
+3. experiment and success/failure evidence;
+4. dependencies and disk/state effects;
+5. biometric/device/authentication risks;
+6. rollback or cleanup.
 
-Before checking out, building, running, installing, or testing an external
-driver, fork, patch, pull request, or merge request, the agent must present:
+Public metadata/source review needs no approval. Do not silently cross from
+research into build, device access, or execution.
 
-1. the source URL and exact branch/commit;
-2. its current upstream/review status;
-3. what the experiment will do;
-4. required dependencies and expected disk/state changes;
-5. biometric, device, and authentication risks;
-6. a rollback or cleanup path.
+## Allowed workspace work
 
-Wait for explicit user approval before proceeding. A build is subject to this
-gate even if it is non-interactive, unprivileged, and confined to `/tmp`.
+Without another approval, read files/docs, run non-package-manager read-only
+inventory, inspect existing logs, edit workspace docs/parsers/fixtures/scripts,
+and statically analyze approved or user-supplied source.
 
-Browsing source code, reading public metadata, and explaining a candidate are
-allowed without approval. Do not silently move from research into checkout,
-build, device access, or execution.
+## Research phases
 
-## Operations allowed without an additional approval
+Complete and report each phase before the next experiment:
 
-Within the user's stated task, the agent may:
+1. **Inventory:** DMI, OS/kernel, VID:PID/revision, interfaces/endpoints/binding,
+   libfprint/fprintd, baseline failure. Redact serials.
+2. **Existing support:** supported-device list, issues/MRs, forks/vendors;
+   evaluate provenance, maintenance, license, dependencies, protocol and safety.
+3. **Experiment:** ask one question; define evidence and rollback; get approval.
+4. **Windows oracle, only if needed:** hash package; prefer VM passthrough plus
+   host usbmon; identify DriverStore/UMDF/kernel components; do not redistribute.
+5. **Protocol:** document requests, endpoints, framing, checksums, states/errors;
+   separate TLS, key derivation and images. Never assume Neodyme/Goodix behavior
+   applies to FPC1022.
+6. **PoC:** offline parsing/synthetic fixtures, then one approved live operation,
+   then libfprint integration after repeatability.
+7. **Authentication:** keep research separate from PAM. Evaluate genuine and
+   impostor trials, replay, spoof/liveness, suspend and reboot before deployment.
 
-- read workspace files and public documentation;
-- run non-interactive, read-only inventory commands that do not use package
-  managers or access biometric contents;
-- inspect already available logs and metadata;
-- create or edit documentation, manifests, parsers, test fixtures, and scripts
-  inside this workspace;
-- perform static analysis on source already approved or supplied by the user.
+## Sensitive data
 
-If a supposedly read-only operation encounters an access restriction, stop and
-ask the user to run the smallest appropriate command. Do not escalate it.
+- Never print raw images, templates, keys, or full serials in chat/normal logs.
+- Keep captures, images, templates, Windows binaries, secrets, debugger logs and
+  core dumps under ignored `artifacts/private/` paths.
+- Publish only sanitized metadata, protocol notes, synthetic fixtures, hashes,
+  and non-proprietary code.
+- Before publication, audit tracked/ignored files for captures, templates, keys,
+  archives, DLLs, serials and private paths.
+- Never replace/flush a PSK without an approved backup and tested recovery.
 
-## Required research sequence
+## Evidence and iteration
 
-Use explicit phase gates. Complete and report one phase before proposing the
-next experiment.
+Keep the experiment log chronological with date, hypothesis, approved command,
+environment, result, artifacts and decision. Pin URLs/commits; ignore builds and
+private captures; prefer offline regression fixtures; change one variable per
+experiment; preserve failures; do not blindly retry device commands.
 
-1. **Inventory**
-   - Record laptop/DMI, kernel, distribution, exact USB VID:PID, revision,
-     interfaces, endpoints, current kernel binding, libfprint/fprintd versions,
-     and the observed baseline failure.
-   - Redact device serial numbers from publishable artifacts.
+## Tool priorities
 
-2. **Existing-support research**
-   - Check the current upstream libfprint supported-device list.
-   - Check open/closed issues and merge requests for the exact VID:PID.
-   - Evaluate forks and vendor offerings for provenance, maintenance, license,
-     review state, dependencies, protocol coverage, and authentication safety.
-   - Prefer upstream work over a new implementation when technically sound.
+- Visual audit: Chrome skill, browser connector, Computer Use.
+- GitHub: `git`, `gh`, GitHub connector. Commit/push/PR only when requested.
 
-3. **Experiment proposal**
-   - Present the smallest experiment that answers one question.
-   - Define success/failure evidence and rollback before running it.
-   - Obtain user approval under the consultation gate.
+## Current posture
 
-4. **Known-good Windows observation, if still needed**
-   - Preserve the Windows driver package metadata and hashes before analysis.
-   - Prefer a Windows VM with explicit USB passthrough and host-side usbmon
-     capture so initialization traffic is visible.
-   - Locate the exact DriverStore package and determine whether the vendor code
-     is UMDF/user-mode or kernel-mode.
-   - Correlate driver logs/debug traces with USB packet timing.
-   - Do not redistribute proprietary Windows binaries.
-
-5. **Protocol characterization**
-   - Document control requests, endpoint direction, message framing, lengths,
-     checksums, state transitions, and error behavior before replaying traffic.
-   - Build a small Wireshark Lua dissector or offline parser for rapid iteration.
-   - Treat TLS records, key derivation, and image encoding as separate layers.
-   - Never assume the Goodix protocol, PSK lifecycle, TLS role, or commands from
-     the Neodyme article are identical to this FPC1022 device.
-
-6. **PoC before integration**
-   - First prove safe enumeration and parsing with recorded/offline data.
-   - Then, with approval, prove one narrowly scoped live operation.
-   - Only after protocol behavior is repeatable should work move into libfprint.
-
-7. **Authentication evaluation**
-   - Keep research verification separate from PAM, login, lock-screen, `sudo`,
-     and disk-unlock integration.
-   - Do not recommend authentication use until genuine/impostor testing is large
-     enough to evaluate false accepts, false rejects, replay resistance, and
-     spoof/liveness limitations.
-
-## Biometric and secret-data handling
-
-Fingerprint images and templates are sensitive personal data.
-
-- Never print raw fingerprint bytes, images, templates, keys, or full device
-  serials into chat or normal logs.
-- Store captures, raw images, templates, Windows binaries, extracted secrets,
-  and debugger logs only under a clearly private ignored path such as
-  `artifacts/private/`.
-- Publish only sanitized metadata, protocol descriptions, synthetic fixtures,
-  hashes, and code that contains no biometric material or proprietary binaries.
-- Before any commit or publication, inspect tracked files and ignored-file rules
-  specifically for `*.pcap`, `*.pcapng`, `*.raw`, `*.bin`, templates, keys,
-  driver packages, DLLs, and serial numbers.
-- Never overwrite or rotate a device PSK/key without a user-approved backup and
-  a tested recovery path.
-
-## Iteration and evidence
-
-- Keep an append-only experiment log with date, hypothesis, exact approved
-  command, environment, result, artifacts, and next decision.
-- Pin external source URLs and commit hashes.
-- Keep generated build trees and private captures out of version control.
-- Prefer offline parsers and recorded synthetic fixtures for regression tests.
-- Make one protocol change per experiment so results remain attributable.
-- Record failures as evidence; do not repeatedly retry device commands blindly.
-
-## Visual audit priority
-
-When a visual audit is required, use this order:
-
-1. Chrome skill
-2. Browser connector
-3. Computer Use skill
-
-## GitHub workflow priority
-
-Assume GitHub configuration exists but request user approval/elevation when
-access requires it. Use this order:
-
-1. `git` command
-2. `gh` command
-3. GitHub connector skill
-
-Do not commit, push, open a PR, or publish artifacts unless the user explicitly
-requests that action.
-
-## Current safety posture
-
-The existing `10a5:9200` libfprint work is experimental until upstream review,
-local reproducibility, and biometric error-rate testing establish otherwise.
-Do not enable it for PAM/login/unlock merely because enumeration, enrollment,
-or a small number of verification attempts succeeds.
+`10a5:9200` support remains experimental until upstream review, reproducibility
+and larger biometric/security testing. Successful enrollment and KDE unlock are
+not production-readiness evidence.
