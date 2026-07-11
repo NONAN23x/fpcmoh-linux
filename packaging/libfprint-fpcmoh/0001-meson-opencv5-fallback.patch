@@ -1,0 +1,43 @@
+diff --git a/libfprint/sigfm/meson.build b/libfprint/sigfm/meson.build
+--- a/libfprint/sigfm/meson.build
++++ b/libfprint/sigfm/meson.build
+@@ -1,7 +1,7 @@
+ 
+ sigfm_sources = ['sigfm.cpp']
+ 
+-opencv = dependency('opencv4', required: false)
++opencv = opencv_dep
+ have_sigfm = opencv.found()
+ 
+ if have_sigfm
+diff --git a/meson.build b/meson.build
+--- a/meson.build
++++ b/meson.build
+@@ -154,12 +154,16 @@ if have_spi
+     default_drivers += spi_drivers
+ endif
+ 
+-# SIGFM-based drivers require OpenCV4 for SIFT keypoint matching
++# SIGFM-based drivers require OpenCV for SIFT keypoint matching.
+ sigfm_drivers = [
+     'fpcmoh',
+ ]
+ 
+-have_opencv = dependency('opencv4', required: false).found()
++opencv_dep = dependency('opencv4', required: false)
++if not opencv_dep.found()
++    opencv_dep = dependency('opencv5', required: false)
++endif
++have_opencv = opencv_dep.found()
+ if have_opencv
+     default_drivers += sigfm_drivers
+     libfprint_conf.set10('HAVE_SIGFM', true)
+@@ -220,7 +224,7 @@ foreach driver : sigfm_drivers
+ endforeach
+ 
+ if enabled_sigfm_drivers.length() > 0 and not have_opencv
+-    error('SIGFM drivers @0@ require opencv4'.format(enabled_sigfm_drivers))
++    error('SIGFM drivers @0@ require OpenCV 4 or 5'.format(enabled_sigfm_drivers))
+ endif
+ 
+ driver_helper_mapping = {

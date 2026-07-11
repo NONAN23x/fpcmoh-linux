@@ -1,0 +1,38 @@
+# Private biometric and protocol artifacts
+artifacts/private/
+FingerPrint.zip
+failed-output.txt
+EXPERIMENT_LOG.md
+*.pcap
+*.pcapng
+*.raw
+*.pgm
+*.f9rm
+*.fp3
+*.fpprint
+
+# Local build and research worktrees
+build/
+work/
+packaging/*/src/
+packaging/*/pkg/
+packaging/*/*.pkg.tar.*
+packaging/*/*.log
+packaging/*/*.tar.gz
+
+# Personalized research harnesses
+tools/fpcmoh-enroll-private.c
+tools/fpcmoh-template-validate.c
+tools/fpcmoh-verify-private.c
+
+# Local agent and alternate Git metadata
+.agents/
+.codex/
+.git-local/
+
+# Crash and generated binary artifacts
+core
+core.*
+*.o
+*.so
+*.a

@@ -1,0 +1,24 @@
+diff --git a/data/autosuspend.hwdb b/data/autosuspend.hwdb
+--- a/data/autosuspend.hwdb
++++ b/data/autosuspend.hwdb
+@@ -419,8 +419,6 @@ usb:v0A5Cp5866*
+ usb:v0A5Cp5867*
+ usb:v0BDAp5812*
+ usb:v10A5p0007*
+-usb:v10A5p9200*
+-usb:v10A5p9201*
+ usb:v10A5p9800*
+ usb:v10A5pA120*
+ usb:v10A5pA900*
+diff --git a/libfprint/fprint-list-udev-hwdb.c b/libfprint/fprint-list-udev-hwdb.c
+--- a/libfprint/fprint-list-udev-hwdb.c
++++ b/libfprint/fprint-list-udev-hwdb.c
+@@ -97,8 +97,6 @@ static const FpIdEntry unsupported_devices[] = {
+   { .vid = 0x0a5c, .pid = 0x5867 },
+   { .vid = 0x0bda, .pid = 0x5812 },
+   { .vid = 0x10a5, .pid = 0x0007 },
+-  { .vid = 0x10a5, .pid = 0x9200 },
+-  { .vid = 0x10a5, .pid = 0x9201 },
+   { .vid = 0x10a5, .pid = 0x9800 },
+   { .vid = 0x10a5, .pid = 0xa120 },
+   { .vid = 0x10a5, .pid = 0xa900 },
