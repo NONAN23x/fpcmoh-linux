@@ -48,15 +48,18 @@ jobs:
         shell: bash
         run: |
           mapfile -t packages < <(find dist -maxdepth 1 -type f -name '*.pkg.tar.zst' -print)
-          if (( ${#packages[@]} != 1 )); then
-            printf 'Expected exactly one package, found %d\n' "${#packages[@]}" >&2
+          mapfile -t primary < <(find dist -maxdepth 1 -type f \
+            -name 'libfprint-fpcmoh-[0-9]*-x86_64.pkg.tar.zst' -print)
+          if (( ${#packages[@]} < 1 || ${#primary[@]} != 1 )); then
+            printf 'Expected one primary package; found %d total and %d primary\n' \
+              "${#packages[@]}" "${#primary[@]}" >&2
             exit 1
           fi
-          identity=$(pacman -Qp "${packages[0]}")
+          identity=$(pacman -Qp "${primary[0]}")
           package_version=${identity#* }
           printf '%s\n' "$identity"
           printf 'package_version=%s\n' "$package_version" >> "$GITHUB_OUTPUT"
-          package_files=$(pacman -Qlp "${packages[0]}")
+          package_files=$(pacman -Qlp "${primary[0]}")
           [[ "$package_files" == *'usr/lib/libfprint-2.so.2'* ]]
           [[ "$package_files" == *'usr/lib/udev/hwdb.d/60-autosuspend-libfprint-2.hwdb'* ]]
           if [[ "$GITHUB_REF" == refs/tags/* && "$GITHUB_REF_NAME" != "v$package_version" ]]; then

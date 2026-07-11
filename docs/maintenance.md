@@ -45,7 +45,9 @@ the PKGBUILD or publishes a package automatically.
 The job builds as an unprivileged user inside an ephemeral Arch container. It
 installs build dependencies only in that container, runs the PKGBUILD test suite,
 checks expected library/hwdb paths, produces `SHA256SUMS`, and creates a GitHub
-artifact-provenance attestation.
+artifact-provenance attestation. Arch runners may also emit a separate debug
+symbols package; the workflow preserves and attests it alongside the required
+primary package.
 
 Release packages are experimental and unsigned. A checksum and GitHub
 attestation improve integrity and provenance, but they are not substitutes for
