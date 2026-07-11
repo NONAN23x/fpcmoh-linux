@@ -1,0 +1,113 @@
+name: Build Arch package
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      package_version: ${{ steps.inspect.outputs.package_version }}
+    container:
+      image: archlinux:base-devel
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    steps:
+      - name: Install Arch build dependencies
+        run: >-
+          pacman -Syu --noconfirm --needed
+          git glib2 glibc libgcc libgudev libgusb opencv openssl pixman
+          glib2-devel gobject-introspection meson python-cairo python-gobject
+          systemd cairo doctest umockdev
+
+      - name: Check out repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - name: Build as an unprivileged user
+        shell: bash
+        run: |
+          useradd --create-home builder
+          install -d -o builder -g builder "$GITHUB_WORKSPACE/dist" "$GITHUB_WORKSPACE/.makepkg"
+          chown -R builder:builder "$GITHUB_WORKSPACE"
+          cd "$GITHUB_WORKSPACE/packaging/libfprint-fpcmoh"
+          runuser -u builder -- env \
+            PKGDEST="$GITHUB_WORKSPACE/dist" \
+            BUILDDIR="$GITHUB_WORKSPACE/.makepkg" \
+            makepkg --clean --cleanbuild --force --noconfirm
+
+      - name: Inspect package and generate checksum
+        id: inspect
+        shell: bash
+        run: |
+          mapfile -t packages < <(find dist -maxdepth 1 -type f -name '*.pkg.tar.zst' -print)
+          if (( ${#packages[@]} != 1 )); then
+            printf 'Expected exactly one package, found %d\n' "${#packages[@]}" >&2
+            exit 1
+          fi
+          identity=$(pacman -Qp "${packages[0]}")
+          package_version=${identity#* }
+          printf '%s\n' "$identity"
+          printf 'package_version=%s\n' "$package_version" >> "$GITHUB_OUTPUT"
+          package_files=$(pacman -Qlp "${packages[0]}")
+          [[ "$package_files" == *'usr/lib/libfprint-2.so.2'* ]]
+          [[ "$package_files" == *'usr/lib/udev/hwdb.d/60-autosuspend-libfprint-2.hwdb'* ]]
+          if [[ "$GITHUB_REF" == refs/tags/* && "$GITHUB_REF_NAME" != "v$package_version" ]]; then
+            printf 'Tag %s must equal package version tag v%s\n' \
+              "$GITHUB_REF_NAME" "$package_version" >&2
+            exit 1
+          fi
+          (cd dist && sha256sum *.pkg.tar.zst > SHA256SUMS)
+          cat dist/SHA256SUMS
+
+      - name: Attest package provenance
+        uses: actions/attest@f6bf1532d7d6793fce74eac584813a8eee607999 # v4
+        with:
+          subject-path: dist/*.pkg.tar.zst
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: libfprint-fpcmoh-${{ github.sha }}
+          path: |
+            dist/*.pkg.tar.zst
+            dist/SHA256SUMS
+          if-no-files-found: error
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download package artifact
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5
+        with:
+          name: libfprint-fpcmoh-${{ github.sha }}
+          path: dist
+
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          printf '%s\n' \
+            'Experimental package for FPC Disum 10a5:9200/9201.' \
+            '' \
+            'This is not an official Arch or upstream libfprint release.' \
+            'The package is unsigned; verify SHA256SUMS and the GitHub artifact attestation.' \
+            'Preserve password access and a stock libfprint rollback package before installation.' \
+            > release-notes.md
+          gh release create "$GITHUB_REF_NAME" dist/* \
+            --verify-tag \
+            --title "libfprint-fpcmoh ${{ needs.build.outputs.package_version }}" \
+            --notes-file release-notes.md

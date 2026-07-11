@@ -1,0 +1,44 @@
+name: Watch upstream libfprint
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 3 * * 1"
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - name: Compare recorded and current upstream state
+        id: upstream
+        run: >-
+          python3 scripts/check-upstream.py
+          --github-output "$GITHUB_OUTPUT"
+          --summary "$GITHUB_STEP_SUMMARY"
+          --report "$RUNNER_TEMP/upstream-report.md"
+
+      - name: Open one maintenance issue
+        if: steps.upstream.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          REPORT: ${{ steps.upstream.outputs.report_path }}
+        shell: bash
+        run: |
+          existing=$(gh issue list --state open \
+            --search 'in:title "Upstream libfprint state changed"' \
+            --json number --jq '.[0].number // empty')
+          if [[ -z "$existing" ]]; then
+            gh issue create \
+              --title 'Upstream libfprint state changed' \
+              --body-file "$REPORT"
+          else
+            printf 'Existing maintenance issue: #%s\n' "$existing"
+          fi

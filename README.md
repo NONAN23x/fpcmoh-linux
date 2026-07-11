@@ -30,6 +30,7 @@ rates or spoof resistance.
 - `packaging/libfprint-fpcmoh/` — reproducible Arch package recipe.
 - `tools/` — narrow open/close, capture, and offline SIGFM research tools.
 - [`CREDITS.md`](CREDITS.md) — upstream authorship and project provenance.
+- `.github/workflows/` — pinned package build/release and upstream monitoring.
 - `AGENTS.md` — safety and experiment rules.
 
 The [stock-versus-patched A/B report](docs/ab-test.md) isolates the functional
@@ -56,6 +57,16 @@ python3 tools/reliability-pilot.py --count 1
 
 The default ledger is ignored under `artifacts/private/` and contains only
 finger labels, placement categories, expected/observed outcomes, and error flags.
+
+## Maintenance and releases
+
+See [package maintenance](docs/maintenance.md) for upstream-update handling,
+manual porting gates, GitHub Actions artifacts, tagged Releases, checksums, and
+provenance attestations. The workflow never auto-updates the pinned driver.
+
+Fingerprint authentication for sudo has material security and usability risks.
+Read the [sudo PAM design and warning](docs/pam-sudo.md) before considering any
+host change; this repository does not modify PAM automatically.
 
 ## Arch package
 
