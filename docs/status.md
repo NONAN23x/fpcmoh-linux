@@ -1,6 +1,6 @@
 # Research status
 
-Updated: 2026-07-11
+Updated: 2026-07-12
 
 ## Target
 
@@ -18,14 +18,16 @@ Updated: 2026-07-11
 - Five-stage host enrollment complete.
 - Private template round-trip validation complete.
 - Initial pilot: `5/5` genuine accepted and `5/5` different-finger rejected.
-- Structured pilot: 41/60 valid trials complete; genuine `13/21` accepted,
-  different-finger `20/20` rejected.
-- Protocol errors: `0`.
+- Structured pilot complete: 60 valid trials plus 2 excluded attempts; genuine
+  `22/30` accepted and different-finger `30/30` rejected.
+- Observed false accepts, protocol errors, and required recoveries: `0`.
 - Harness teardown bug: fixed and validated.
 - Stock-versus-patched A/B: stock exposed no reader; patched package restored
   the reader, existing enrollment, verification, and KDE unlock.
 - linux-hardware.org historical record: no kernel/additional-package driver and
   all 104 listed computer records (107 probes) marked failed when checked.
+- [GitHub Release v1.94.10.fpcmoh.10.gaf647965-2](https://github.com/NONAN23x/fpcmoh-linux/releases/tag/v1.94.10.fpcmoh.10.gaf647965-2):
+  published with checksums and provenance attestation.
 
 ## State
 
@@ -42,12 +44,14 @@ Updated: 2026-07-11
 - fprintd enrollment: right index completed.
 - fprintd genuine verification: passed.
 - fprintd different-finger rejection: passed.
-- Suspend/resume: passed.
+- Suspend/resume: KDE unlock passed, but one later verification attempt failed
+  with `Cannot run while suspended`; restarting fprintd restored operation.
 - KDE lock-screen unlock: passed; enrolled finger accepted, other fingers rejected.
 - PAM files changed by project: none.
 - Existing KDE vendor policy: `/usr/lib/pam.d/kde-fingerprint` uses `pam_fprintd`.
 - Reboot persistence and password fallback: passed.
 - SDDM fingerprint login: not configured; KDE lock-screen unlock works.
-- Complete remaining 19 sparse reliability trials after cooldown; avoid rapid
-  batches and preserve the current enrollment until the pilot finishes.
+- Investigate and reproduce the suspend-state failure with focused logs; do not
+  treat the daemon restart as a driver fix.
+- No more accuracy trials are planned without a new, approved question.
 - Keep official `libfprint` as rollback.

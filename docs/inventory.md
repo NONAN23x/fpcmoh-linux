@@ -30,14 +30,18 @@ excluded.
 - SIGFM offline matching: passed; placement sensitivity documented.
 - Five-stage host enrollment: passed; private template validated byte-for-byte.
 - Live pilot: 5/5 genuine accepts, 5/5 different-finger rejects, 0 protocol errors.
-- Structured reliability pilot: 41 valid trials so far; 13/21 genuine accepts,
-  20/20 different-finger rejects, and no protocol/daemon failure. Rotation,
-  light contact, rapid scanning, and sensor cleanliness affect reliability.
+- Structured reliability pilot: 60 valid trials plus 2 excluded attempts; 22/30
+  genuine accepts, 30/30 different-finger rejects, no observed false accepts,
+  and no protocol errors or required recovery. Rotation, light contact, rapid
+  scanning, and sensor cleanliness affect reliability.
 - fprintd enrollment and verification: passed.
 - KDE lock-screen unlock after suspend and reboot: passed; no project PAM edit required.
 - Stock-versus-patched A/B package test: stock exposed no device; restoring the
   pinned patched package immediately restored the reader, saved enrollment, and
   KDE fingerprint unlock.
+- One later verification attempt reported `Cannot run while suspended`; a
+  fprintd restart restored operation. Treat this as an open suspend/resume
+  reliability issue, not a resolved defect.
 
 ## Physical USB inventory
 
