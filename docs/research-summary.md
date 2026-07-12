@@ -1,6 +1,6 @@
 # Research summary
 
-Updated: 2026-07-11
+Updated: 2026-07-12
 
 ## Target
 
@@ -19,14 +19,17 @@ Updated: 2026-07-11
 - SIGFM extraction/matching: passed.
 - Five-stage host template enrollment: passed.
 - Initial live pilot: 5/5 genuine accepted and 5/5 different-finger rejected.
-- Structured pilot so far: 41 valid trials; 13/21 genuine accepted and 20/20
-  different-finger rejected. Centered placement is reliable; rotation, light
-  pressure, rapid scanning, and sensor cleanliness reduce capture reliability.
+- Structured pilot complete: 60 valid trials plus 2 excluded attempts; 22/30
+  genuine accepted and 30/30 different-finger controls rejected. Centered
+  placement was 6/6; clockwise rotation was 1/5. Rotation, light pressure,
+  rapid scanning, and sensor cleanliness reduce capture reliability.
 - fprintd enroll/list/verify: passed.
-- Suspend/resume, reboot persistence, and KDE lock-screen unlock: passed.
+- Reboot persistence and KDE lock-screen unlock: passed. One later verification
+  request returned `Cannot run while suspended`; restarting fprintd recovered
+  operation, so suspend/resume remains an open reliability concern.
 - Stock-versus-patched A/B: stock listed no device; the patched package restored
   the reader, preserved enrollment, and working KDE unlock.
-- Protocol crashes, daemon failures, and required recoveries: 0.
+- Pilot protocol errors and required recoveries: 0; observed false accepts: 0.
 
 ## Historical support evidence
 

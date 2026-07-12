@@ -16,7 +16,8 @@ Ultra.
 - Pinned commit: `af647965253bfcf283474bf6a9dd486f1df553eb`.
 - TLS-PSK open/close and native image capture: passed.
 - Five-stage match-on-host enrollment: passed.
-- Research pilot: 5/5 genuine accepts and 5/5 different-finger rejects.
+- Structured reliability pilot: 22/30 genuine matches and 30/30
+  different-finger rejections; no observed false accepts or protocol errors.
 - fprintd enrollment and verification: passed.
 - KDE lock-screen unlock after suspend: passed.
 
@@ -40,23 +41,21 @@ enrollment and system configuration.
 ## Reliability pilot
 
 `tools/reliability-pilot.py` is an interactive aggregate-only runner for sparse
-genuine and different-finger trials. It does not enroll, delete templates, edit
-PAM, or store fprintd output. Review the next planned trials without touching the
-sensor:
+genuine and different-finger trials. The initial 30/30 pilot is complete: it
+recorded 22/30 genuine matches and 30/30 different-finger rejections, with two
+excluded attempts and no protocol errors or required recovery. It does not
+enroll, delete templates, edit PAM, or store fprintd output.
 
 ```bash
-python3 tools/reliability-pilot.py --plan --count 5
-```
-
-Run live trials only after reviewing the safety boundary and ensuring password
-fallback. Use small sessions separated by normal laptop use:
-
-```bash
-python3 tools/reliability-pilot.py --count 1
+python3 tools/reliability-pilot.py --plan
 ```
 
 The default ledger is ignored under `artifacts/private/` and contains only
 finger labels, placement categories, expected/observed outcomes, and error flags.
+
+The pilot is too small for FAR/FRR, liveness, or spoof-resistance claims. It
+does show placement sensitivity: centered placement was 6/6, while clockwise
+rotation was 1/5.
 
 ## Maintenance and releases
 
