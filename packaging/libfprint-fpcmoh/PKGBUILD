@@ -2,14 +2,14 @@
 # Research package for the Mi NoteBook Ultra FPC 10a5:9200 sensor.
 
 pkgname=libfprint-fpcmoh
-pkgver=1.94.10.fpcmoh.10.gaf647965
-pkgrel=2
+pkgver=1.94.10.fpcmoh.10.gba10c939
+pkgrel=1
 pkgdesc='Pinned experimental libfprint with FPC Disum 10a5:9200 support'
 url='https://gitlab.freedesktop.org/libfprint/libfprint/-/merge_requests/570'
 arch=(x86_64)
 license=(LGPL-2.1-or-later)
 
-_commit=af647965253bfcf283474bf6a9dd486f1df553eb
+_commit=ba10c9398fe4542ff6403549884d0c8687182845
 
 depends=(
   glib2
@@ -42,20 +42,10 @@ conflicts=(libfprint)
 
 source=(
   "https://gitlab.freedesktop.org/libfprint/libfprint/-/archive/$_commit/libfprint-$_commit.tar.gz"
-  0001-meson-opencv5-fallback.patch
-  0002-fpcmoh-remove-supported-ids-from-unsupported.patch
 )
 sha256sums=(
-  513bc41c95b6d086e8a44c959d0ebe7df80e49544432a62d8c0da9a9467fde4a
-  d5d096dc0e826a6bf46de38963337a24228b5f17c6723e48e2e8e1b1da0f3c44
-  6e42aa5596e9cb08e724c85e2a8f049b147f08da987fabc0d3a8a414b9097493
+  77021ac01625cfecba2187d67ab61ad0a23277eebbea41d009df914af6f760e9
 )
-
-prepare() {
-  cd "libfprint-$_commit"
-  patch -Np1 -i ../0001-meson-opencv5-fallback.patch
-  patch -Np1 -i ../0002-fpcmoh-remove-supported-ids-from-unsupported.patch
-}
 
 build() {
   local meson_options=(

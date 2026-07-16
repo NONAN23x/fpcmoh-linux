@@ -1,16 +1,23 @@
 # libfprint-fpcmoh package
 
 - Source: libfprint MR `!570`.
-- Commit: `af647965253bfcf283474bf6a9dd486f1df553eb`.
-- Source archive SHA-256: `513bc41c95b6d086e8a44c959d0ebe7df80e49544432a62d8c0da9a9467fde4a`.
+- Commit: `ba10c9398fe4542ff6403549884d0c8687182845`.
+- Source archive SHA-256: `77021ac01625cfecba2187d67ab61ad0a23277eebbea41d009df914af6f760e9`.
 - Status: experimental; open, conflicted, needs rebase.
 - Target: FPC `10a5:9200` and `10a5:9201`.
 - Action: replaces `libfprint`; preserves ABI `libfprint-2.so.2`.
 - Added dependency: `opencv`.
 - API HTML docs: disabled; gtk-doc breaks on whitespace paths and is not runtime data.
 - PAM changes: none.
-- Valid package revision: `pkgrel=2` or newer.
-- Rejected package: `pkgrel=1`; it contains stale hwdb data.
+- Candidate package: `1.94.10.fpcmoh.10.gba10c939-1`.
+- Source patches: none; the MR now contains the prior OpenCV 5 and device-table
+  corrections.
+- Offline result: Arch package build, 122 Meson tests, and 8 SIGFM tests passed.
+- Audit limitation: a separate `meson setup --werror -Ddrivers=all` build fails
+  while compiling `libfprint/sigfm/tests.cpp` against OpenCV 5/GCC 16.
+- Candidate `1.94.10.fpcmoh.10.gba10c939-1` is installed; initial genuine
+  verification passed. The prior `1.94.10.fpcmoh.10.gaf647965-2` package is
+  retained for rollback while broader validation continues.
 
 Build only after review. Do not use `--install`.
 

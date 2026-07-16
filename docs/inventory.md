@@ -1,6 +1,6 @@
 # Mi NoteBook Ultra fingerprint research inventory
 
-Inventory date: 2026-07-10 (Asia/Kolkata)
+Inventory date: 2026-07-10; research update: 2026-07-16 (Asia/Kolkata)
 
 This is the sanitized baseline for interoperability research on the user's own
 hardware. USB device serial numbers and biometric contents are intentionally
@@ -42,6 +42,15 @@ excluded.
 - One later verification attempt reported `Cannot run while suspended`; a
   fprintd restart restored operation. Treat this as an open suspend/resume
   reliability issue, not a resolved defect.
+- Unmodified MR rebase `ba10c939` built successfully: 122/122 Meson tests and
+  8/8 SIGFM cases passed. Package `1.94.10.fpcmoh.10.gba10c939-1` was installed
+  successfully and its library matches the inspected package. fprintd found the
+  device and preserved enrollment, and one genuine verification matched.
+- On the rebase package, new left-middle enrollment and verification passed;
+  presenting right index against the selected left-middle template returned
+  no-match. KDE lock-screen unlock accepted both enrolled fingers.
+- Rebase post-reboot smoke test: 12/15 genuine matches and 15/15
+  different-finger rejections; no protocol errors or recovery.
 
 ## Physical USB inventory
 
@@ -241,7 +250,8 @@ No key material or biometric data was extracted.
 - Implements host-as-server TLS-PSK transport, 112x88 grayscale capture,
   five-stage image-device enrollment, and SIGFM/SIFT match-on-host verification.
 - Reported by its author to work on real `10a5:9200` hardware.
-- Still open at `af647965253bfcf283474bf6a9dd486f1df553eb`; conflicted and needs rebasing.
+- Still open at rebased candidate `ba10c9398fe4542ff6403549884d0c8687182845`;
+  conflicted and reported as needing another rebase when checked on 2026-07-16.
 - Depends on still-unmerged SIGFM work in merge request !530.
 - Best technical reference and likely best upstream destination, but not yet a
   production-ready package.

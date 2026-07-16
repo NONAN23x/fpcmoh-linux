@@ -1,13 +1,15 @@
 # Research status
 
-Updated: 2026-07-12
+Updated: 2026-07-16
 
 ## Target
 
 - Hardware: Mi NoteBook Ultra, FPC `10a5:9200`.
 - Firmware: `11.26.1.44`.
 - Driver: libfprint MR `!570`.
-- Commit: `af647965253bfcf283474bf6a9dd486f1df553eb`.
+- Hardware-tested commit: `af647965253bfcf283474bf6a9dd486f1df553eb`.
+- Installed candidate, initial live validation passed:
+  `ba10c9398fe4542ff6403549884d0c8687182845`.
 - Upstream: open, conflicted, needs rebase.
 
 ## Achieved
@@ -31,17 +33,29 @@ Updated: 2026-07-12
 
 ## State
 
-- System libfprint: `libfprint-fpcmoh 1.94.10.fpcmoh.10.gaf647965-2`.
-- fprintd: D-Bus activated; one preserved right-index enrollment.
+- System libfprint: `libfprint-fpcmoh 1.94.10.fpcmoh.10.gba10c939-1`;
+  installed library matches the inspected package.
+- fprintd: D-Bus activated; right-index and new left-middle enrollments present.
+- fprintd core limit: runtime override restored; `LimitCORE=0` verified.
 - Project PAM changes: none; existing KDE vendor fingerprint policy is active.
 - Readiness: research-only, not production-qualified.
 
 ## Next
 
-- Package pkgrel 2: built and inspected; SHA-256 pinned in experiment log.
-- Package pkgrel 1: rejected; stale hwdb; must not be installed.
-- Package pkgrel 2: installed; byte match and linkage verified.
-- fprintd enrollment: right index completed.
+- Rebased candidate package `1.94.10.fpcmoh.10.gba10c939-1`: built from
+  unmodified MR source; 122 Meson tests and 8/8 SIGFM tests passed.
+- Candidate package SHA-256:
+  `118b3568b8a66aeb10a714a4ef9ceb8ceab782d10207a8b0202f2e68fe652441`.
+- Separate OpenCV 5/GCC 16 `--werror` build: failed in SIGFM test compilation;
+  see the dedicated note.
+- Candidate live smoke test: device discovery, preserved right-index listing,
+  new left-middle enrollment, explicit left-middle match, cross-template
+  rejection, and KDE unlock with either enrolled finger passed.
+- Post-reboot 30-trial two-template smoke test: 12/15 genuine matches and
+  15/15 different-finger rejections; 0 protocol errors and 0 recoveries.
+- Prior `gaf647965-2` package: built, inspected, installed, and live-tested.
+- Rejected prior `gaf647965-1` package: stale hwdb; must not be installed.
+- fprintd enrollment: right index and left middle completed.
 - fprintd genuine verification: passed.
 - fprintd different-finger rejection: passed.
 - Suspend/resume: KDE unlock passed, but one later verification attempt failed

@@ -1,6 +1,6 @@
 # Research summary
 
-Updated: 2026-07-12
+Updated: 2026-07-16
 
 ## Target
 
@@ -8,8 +8,10 @@ Updated: 2026-07-12
 - Sensor: FPC Disum/FPC1022 family.
 - USB ID: `10a5:9200`.
 - Firmware: `11.26.1.44`.
-- Linux base: libfprint MR `!570`, commit
+- Hardware-tested base: libfprint MR `!570`, commit
   `af647965253bfcf283474bf6a9dd486f1df553eb`.
+- Installed rebase candidate: `ba10c9398fe4542ff6403549884d0c8687182845`;
+  initial genuine verification passed.
 
 ## Results
 
@@ -30,6 +32,15 @@ Updated: 2026-07-12
 - Stock-versus-patched A/B: stock listed no device; the patched package restored
   the reader, preserved enrollment, and working KDE unlock.
 - Pilot protocol errors and required recoveries: 0; observed false accepts: 0.
+- Unmodified rebase candidate: package build passed, 122/122 Meson tests passed,
+  and SIGFM passed 8/8 cases and 24/24 assertions. The installed library matches
+  the inspected package byte-for-byte. After fprintd restart, the device and
+  preserved enrollment were listed and one genuine verification matched.
+- Rebase live extension: left-middle enrollment and verification passed;
+  right-index presented against the selected left-middle template was rejected.
+  KDE lock-screen unlock accepted either enrolled template. The post-reboot
+  two-template smoke test recorded 12/15 genuine matches and 15/15
+  different-finger rejections, with no protocol errors or recovery.
 
 ## Historical support evidence
 
@@ -54,6 +65,8 @@ remained available.
 - Liveness and spoof resistance were not evaluated.
 - SDDM does not currently offer fingerprint login; KDE session unlock does.
 - OpenCV 5 package linkage is larger than ideal.
+- A separate OpenCV 5/GCC 16 `--werror` build fails in SIGFM test compilation;
+  the normal package build and tests pass.
 
 ## Safety
 

@@ -13,11 +13,15 @@ Ultra.
 - Hardware: FPC `10a5:9200`, firmware `11.26.1.44`.
 - Driver base: libfprint MR
   [!570](https://gitlab.freedesktop.org/libfprint/libfprint/-/merge_requests/570).
-- Pinned commit: `af647965253bfcf283474bf6a9dd486f1df553eb`.
+- Hardware-tested commit: `af647965253bfcf283474bf6a9dd486f1df553eb`.
+- Rebase candidate: `ba10c9398fe4542ff6403549884d0c8687182845`;
+  offline tests and a post-reboot two-template smoke test passed.
 - TLS-PSK open/close and native image capture: passed.
 - Five-stage match-on-host enrollment: passed.
 - Structured reliability pilot: 22/30 genuine matches and 30/30
   different-finger rejections; no observed false accepts or protocol errors.
+- Rebase smoke test: 12/15 genuine matches and 15/15 different-finger
+  rejections; no protocol errors or required recovery.
 - fprintd enrollment and verification: passed.
 - KDE lock-screen unlock after suspend: passed.
 
@@ -27,7 +31,6 @@ rates or spoof resistance.
 ## Repository layout
 
 - `docs/` — sanitized hardware inventory and research results.
-- `patches/` — OpenCV 5 and device-table corrections for the pinned MR.
 - `packaging/libfprint-fpcmoh/` — reproducible Arch package recipe.
 - `tools/` — narrow open/close, capture, and offline SIGFM research tools.
 - [`CREDITS.md`](CREDITS.md) — upstream authorship and project provenance.
@@ -37,6 +40,9 @@ rates or spoof resistance.
 The [stock-versus-patched A/B report](docs/ab-test.md) isolates the functional
 difference to the patched libfprint package while preserving the same fprintd
 enrollment and system configuration.
+
+The [rebase audit](docs/rebase-ba10c939-audit.md) records the unmodified MR
+candidate build, package inspection, and remaining `--werror` failure.
 
 ## Reliability pilot
 
@@ -52,6 +58,15 @@ python3 tools/reliability-pilot.py --plan
 
 The default ledger is ignored under `artifacts/private/` and contains only
 finger labels, placement categories, expected/observed outcomes, and error flags.
+
+`tools/rebase-smoke-30.py` is the resumable post-reboot check for MR !570 commit
+`ba10c939`. It explicitly selects the right-index or left-middle template for
+15 genuine and 15 different-finger trials, and pauses after every five valid
+trials to reduce rapid-scan failures.
+
+```bash
+python3 tools/rebase-smoke-30.py --plan
+```
 
 The pilot is too small for FAR/FRR, liveness, or spoof-resistance claims. It
 does show placement sensitivity: centered placement was 6/6, while clockwise
@@ -90,7 +105,7 @@ commits.
 
 ## Upstream status
 
-MR !570 remains experimental and needs rebase/review. The preferred long-term
+MR !570 remains experimental and needs upstream review. The preferred long-term
 outcome is a reviewed upstream libfprint driver, not a permanent downstream
 package.
 

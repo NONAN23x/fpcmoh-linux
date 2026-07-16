@@ -21,8 +21,10 @@ SIGFM algorithm.
 ## This downstream repository
 
 The work here adds independent `10a5:9200` hardware validation, an Arch package
-recipe, an OpenCV 5 dependency fallback, a supported-device table correction,
-narrow research tools, privacy controls, and sanitized interoperability results.
+recipe, narrow research tools, privacy controls, and sanitized interoperability
+results. The earlier downstream OpenCV 5 fallback and supported-device table
+correction were incorporated into MR !570; the current package applies no source
+patches.
 
 The package recipe fetches the pinned upstream source archive directly from
 freedesktop.org. Upstream source and local code are distributed under
